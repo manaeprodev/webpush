@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="config.js"></script>
+    <script>
+        function main() {
+            if(!checkBrowser()) {
+                return;
+            }
+            let sw_registration = registerServiceWorker();
+            console.log(sw_registration);
+
+            if(Notification.permission === "granted") {
+                document.getElementById("msg").innerHTML = "<b>Notifs déjà activées!<b/>"
+            } else if(Notification.permission === "denied") {
+                document.getElementById("msg").innerHTML = "<b>Déjà refusé!<b/>"
+            }
+
+
+        }
+
+        function notif() {
+            askPermission().then(function() {
+                document.getElementById("msg").innerHTML = "<b>Notifs désormais activées!</b>"
+                accepteNotif();
+            }).catch(function (){
+                document.getElementById("msg").innerHTML = "<b>Notifs bien refusées!<b/>"
+            })
+        }
+    </script>
+</head>
+<body onload="main()">
+<div id="msg">
+    <button onclick="notif()">Accepter les notifications</button>
+</div>
+</body>
+<script>
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Empêche le formulaire de se soumettre normalement
+
+        // Récupère les valeurs du champ "titre" et du champ "notif"
+        const titre = document.getElementById('titre').value;
+        const notif = document.getElementById('notif').value;
+
+        // Envoie ces valeurs au service worker
+        navigator.serviceWorker.controller.postMessage({ titre, notif });
+    });
+</script>
+</html>
